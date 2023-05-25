@@ -1,39 +1,51 @@
 #include "monty.h"
+#include <ctype.h>
 
 /**
- * f_push - add node to the stack
- * @head: stack head
- * @counter: The line number
- * Return: none
+ * check_for_digit - Check that a str contains digits only
+ * @arg: str to check
+ * Return: 0 if only digits, else 1
  */
 
-void f_push(stack_t **head, unsigned int counter)
+static int check_for_digit(char *arg)
 {
-	int n, j = 0, flag = 0;
+	int i;
 
-	if (bus.arg)
+	for (i = 0; arg[i]; i++)
 	{
-		if (bus.arg[0] == '-'
-			j++;
-		for (; bus.arg[j] != '\0'; j++
-		{
-			if (bus.arg[j] > 57 || bus.arg[j] < 48)
-				flag = 1; }
-		if (flag == 1)
-		{ fprint(stderr, "L%d: usage: push interger\m", counter);
-			fclose(bus.file);
-			free(bus.content);
-			free_stack(*head);
-			exit(EXIT_FAILURE); }}
-	else
-	{ fprintf(stderr, "L%d: usage: push interger\n", counter);
-		fclose(bus.file);
-		free(bus.content);
-		free_stack(*head);
-		exit(EXIT_FAILURE); }
-	n = atoi(bus.arg);
-	if (bus.lifi == 0)
-		addnode(head, n);
-	else
-		addqueue(head, n);
+		if (arg[i] == '_' && i == 0)
+			continue;
+		if (isdigit(arg[i]) == 0)
+			return (1);
+	}
+	return (0);
+}
+
+/**
+ * m_push - To push an interger onto stack
+ * @stack: double ptr to beginning of stack
+ * @line_number: script line number
+ * Return: void
+ */
+
+void m_push(stack_t **stack, unsigned int line_number)
+{
+	char *arg;
+	int n;
+
+	arg = strtok(NULL, "\n\t\r ");
+	if (arg == NULL || check_for_digit(arg))
+	{
+		dprintf(STDOUT_FILENO,
+				"L%u: usage: push interger\n",
+				line_number);
+		exit(EXIT_FAILURE);
+	}
+	n = atoi(arg);
+	if (!add_node(stack, n))
+	{
+		dprintf(STDOUT_FILENO, "Error: malloc failed\n");
+		exit(EXIT_FAILURE);
+	}
+	var.stack_len++;
 }
